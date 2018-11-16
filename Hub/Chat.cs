@@ -58,14 +58,6 @@ namespace Microsoft.Azure.SignalR.Samples.ChatRoom
 
         public void Echo(string name, string message)
         {
-            //             POST /knowledgebases/06b1420e-5412-4163-99cc-b82946a3464f/generateAnswer
-            // Host: https://testqnaassistant.azurewebsites.net/qnamaker
-            // Authorization: EndpointKey d7eb4be0-ab98-41bb-81e7-799cf284aa44
-            // Content-Type: application/json
-            // {"question":"<Your question>"}
-            //curl -X POST https://testqnaassistant.azurewebsites.net/qnamaker/knowledgebases/06b1420e-5412-4163-99cc-b82946a3464f/generateAnswer -H "Authorization: EndpointKey d7eb4be0-ab98-41bb-81e7-799cf284aa44" -H "Content-type: application/json" -d "{'question':'<Your question>'}"
-
-
             Clients.Client(Context.ConnectionId).SendAsync("echo", name, message);
         }
 
