@@ -11,6 +11,7 @@ namespace Microsoft.Azure.SignalR.Samples.ChatRoom
     using System.Net;
     using System.Net.Http;
     using System.Text;
+    using System.Threading.Tasks;
     using Extensions.Configuration;
     using Newtonsoft.Json;
     using Microsoft.Extensions.Configuration;
@@ -25,11 +26,20 @@ namespace Microsoft.Azure.SignalR.Samples.ChatRoom
         }
         public void BroadcastMessage(string name, string message)
         {
-            var baseAddress = "https://testqnaassistant.azurewebsites.net/qnamaker/knowledgebases/06b1420e-5412-4163-99cc-b82946a3464f/generateAnswer";
-            
+            var answer = GetAnswerToUserEnteredQuestion(message);
+
+            Clients.Client(Context.ConnectionId).SendAsync("echo", name, message);
+            Clients.Client(Context.ConnectionId).SendAsync("broadcastMessage", "Assistant", answer.answers[0].answer);
+        }
+
+        private QuestionAndAnswer GetAnswerToUserEnteredQuestion(string message)
+        {
+            var baseAddress =
+                "https://testqnaassistant.azurewebsites.net/qnamaker/knowledgebases/06b1420e-5412-4163-99cc-b82946a3464f/generateAnswer";
+
             string accessKey = _configuration["KnowledgeBaseAccessKey"];
 
-            var http = (HttpWebRequest)WebRequest.Create(new Uri(baseAddress));
+            var http = (HttpWebRequest) WebRequest.Create(new Uri(baseAddress));
             http.Accept = "application/json";
             http.ContentType = "application/json";
             http.Headers.Add("Authorization", $"EndpointKey {accessKey}");
@@ -48,11 +58,7 @@ namespace Microsoft.Azure.SignalR.Samples.ChatRoom
             var stream = response.GetResponseStream();
             var sr = new StreamReader(stream);
             var content = JsonConvert.DeserializeObject<QuestionAndAnswer>(sr.ReadToEnd());
-
-            
-            
-            Clients.Client(Context.ConnectionId).SendAsync("echo", name, message);
-            Clients.All.SendAsync("broadcastMessage", "Assistant", content.answers[0].answer);
+            return content;
         }
 
 

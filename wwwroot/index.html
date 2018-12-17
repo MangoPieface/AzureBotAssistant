@@ -19,7 +19,6 @@
                           placeholder="Type message and press Enter to send..."></textarea>
         </div>
         <div style="overflow: auto; border-style: ridge; border-top-style: hidden;">
-            <button class="btn-warning pull-right" id="echo">Echo</button>
             <button class="btn-success pull-right" id="sendmessage">Send</button>
         </div>
     </div>
@@ -100,7 +99,7 @@
 
             function onConnected(connection) {
                 console.log('connection started');
-                connection.send('broadcastMessage', '_SYSTEM_', username + ' JOINED');
+
                 document.getElementById('sendmessage').addEventListener('click', function (event) {
                     // Call the broadcastMessage method on the hub.
                     if (messageInput.value) {
@@ -116,18 +115,9 @@
                     if (event.keyCode === 13) {
                         event.preventDefault();
                         document.getElementById('sendmessage').click();
-                        return false;
                     }
-                });
-                document.getElementById('echo').addEventListener('click', function (event) {
-                    // Call the echo method on the hub.
-                    connection.send('echo', username, messageInput.value);
-
-                    // Clear text box and reset focus for next comment.
-                    messageInput.value = '';
-                    messageInput.focus();
-                    event.preventDefault();
-                });
+                    return false;
+                }); 
             }
 
             function onConnectionError(error) {
